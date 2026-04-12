@@ -1,11 +1,14 @@
-# 論文原始大資料不進 Git
+# 論文原始大資料不進 Git（重要！）
 data/
 *.csv
 *.xlsx
+*.zip
 
-# Python
+# Python 垃圾檔
 __pycache__/
 *.pyc
+*.py[cod]
+*$py.class
 *.egg-info/
 .eggs/
 
@@ -18,7 +21,11 @@ Thumbs.db
 
 # Docker
 .docker/
+.dockerignore
 
-# Virtual environments
+# 虛擬環境
 venv/
-env/
+.venv/
+
+# 環境變數（存資料庫密碼，不能公開）
+.env
