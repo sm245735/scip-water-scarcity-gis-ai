@@ -1,0 +1,119 @@
+2026-04-12 21:53:19,703 INFO ============================================================
+2026-04-12 21:53:19,704 INFO 水庫 Statistics Selenium 自動化
+2026-04-12 21:53:19,704 INFO 目標：2016-01-01 ~ 2026-01-01
+2026-04-12 21:53:19,704 INFO 輸出：/home/sm245735/.openclaw/workspace/scip-water-scarcity-gis-ai/src/data/03. 資料/水庫Statistics下載
+2026-04-12 21:53:19,704 INFO Remote Debugging：127.0.0.1:18800
+2026-04-12 21:53:19,704 INFO ============================================================
+2026-04-12 21:53:21,598 INFO 導航到 Statistics.aspx...
+2026-04-12 21:53:33,189 INFO 設定查詢條件為「全部」...
+2026-04-12 21:53:54,712 ERROR   ❌ 2016-01-01 處理失敗: Message: Cannot locate option with value: 01; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#nosuchelementexception
+
+2026-04-12 21:54:09,923 ERROR   ❌ 2016-01-02 處理失敗: Message: Cannot locate option with value: 01; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#nosuchelementexception
+
+2026-04-12 21:54:25,150 ERROR   ❌ 2016-01-03 處理失敗: Message: Cannot locate option with value: 01; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#nosuchelementexception
+
+2026-04-12 21:54:31,665 INFO 
+使用者中斷！
+2026-04-12 21:54:31,736 WARNING Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError("HTTPConnection(host='localhost', port=60309): Failed to establish a new connection: [Errno 111] Connection refused")': /session/8583cac08c84cdd909a102e19809cd4c
+2026-04-12 21:54:31,737 WARNING Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError("HTTPConnection(host='localhost', port=60309): Failed to establish a new connection: [Errno 111] Connection refused")': /session/8583cac08c84cdd909a102e19809cd4c
+2026-04-12 21:54:31,737 WARNING Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError("HTTPConnection(host='localhost', port=60309): Failed to establish a new connection: [Errno 111] Connection refused")': /session/8583cac08c84cdd909a102e19809cd4c
+2026-04-12 21:55:31,958 INFO ============================================================
+2026-04-12 21:55:31,958 INFO 水庫 Statistics Selenium 自動化
+2026-04-12 21:55:31,958 INFO 目標：2016-01-01 ~ 2026-01-01
+2026-04-12 21:55:31,958 INFO 輸出：/home/sm245735/.openclaw/workspace/scip-water-scarcity-gis-ai/src/data/03. 資料/水庫Statistics下載
+2026-04-12 21:55:31,958 INFO Remote Debugging：127.0.0.1:18800
+2026-04-12 21:55:31,959 INFO ============================================================
+2026-04-12 21:55:32,185 INFO 導航到 Statistics.aspx...
+2026-04-12 21:55:38,576 INFO 設定查詢條件為「全部」...
+2026-04-12 21:56:17,682 WARNING   無法讀取表格: Message: no such element: Unable to locate element: {"method":"css selector","selector":"[id="ctl00_cphMain_pnlGrid"]"}
+  (Session info: chrome=146.0.7680.177); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#nosuchelementexception
+Stacktrace:
+#0 0x5f6a4086aa6a <unknown>
+#1 0x5f6a40279ab5 <unknown>
+#2 0x5f6a402cc676 <unknown>
+#3 0x5f6a402cc8b1 <unknown>
+#4 0x5f6a40317614 <unknown>
+#5 0x5f6a403147b6 <unknown>
+#6 0x5f6a402bfcbf <unknown>
+#7 0x5f6a402c0a81 <unknown>
+#8 0x5f6a40830a64 <unknown>
+#9 0x5f6a40833951 <unknown>
+#10 0x5f6a4081d21e <unknown>
+#11 0x5f6a4083451e <unknown>
+#12 0x5f6a40803be0 <unknown>
+#13 0x5f6a408579b8 <unknown>
+#14 0x5f6a40857b88 <unknown>
+#15 0x5f6a408694de <unknown>
+#16 0x7090b66a3d64 <unknown>
+#17 0x7090b67373fc <unknown>
+
+2026-04-12 21:56:17,683 WARNING   ⚠️ 2016-01-01 無資料
+2026-04-12 21:56:17,858 INFO   已點擊下載: 水庫統計_20160101.xls
+2026-04-12 21:56:22,871 WARNING   ⚠️ 下載後找不到檔案: 水庫統計_20160101.xls
+2026-04-12 21:56:48,974 INFO 
+使用者中斷！
+2026-04-12 21:56:48,979 WARNING Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ConnectionResetError(104, 'Connection reset by peer')': /session/46effc632c382439560576744bfb1ead
+2026-04-12 21:56:48,982 WARNING Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError("HTTPConnection(host='localhost', port=34319): Failed to establish a new connection: [Errno 111] Connection refused")': /session/46effc632c382439560576744bfb1ead
+2026-04-12 21:56:48,986 WARNING Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError("HTTPConnection(host='localhost', port=34319): Failed to establish a new connection: [Errno 111] Connection refused")': /session/46effc632c382439560576744bfb1ead
+2026-04-12 22:01:39,690 INFO ============================================================
+2026-04-12 22:01:39,691 INFO 水庫 Statistics Selenium 自動化
+2026-04-12 22:01:39,691 INFO 目標：2016-01-01 ~ 2026-01-01
+2026-04-12 22:01:39,691 INFO 輸出：/home/sm245735/.openclaw/workspace/scip-water-scarcity-gis-ai/data/水庫歷史水情
+2026-04-12 22:01:39,691 INFO Remote Debugging：127.0.0.1:18800
+2026-04-12 22:01:39,691 INFO ============================================================
+2026-04-12 22:01:39,939 INFO 導航到 Statistics.aspx...
+2026-04-12 22:01:40,245 INFO 等待下拉選單出現...
+2026-04-12 22:01:43,268 INFO 設定查詢條件為「全部」...
+2026-04-12 22:02:26,468 WARNING   讀取表格失敗: Message: 
+Stacktrace:
+#0 0x5acc9025ea6a <unknown>
+#1 0x5acc8fc6dab5 <unknown>
+#2 0x5acc8fcc0676 <unknown>
+#3 0x5acc8fcc08b1 <unknown>
+#4 0x5acc8fd0b614 <unknown>
+#5 0x5acc8fd087b6 <unknown>
+#6 0x5acc8fcb3cbf <unknown>
+#7 0x5acc8fcb4a81 <unknown>
+#8 0x5acc90224a64 <unknown>
+#9 0x5acc90227951 <unknown>
+#10 0x5acc9021121e <unknown>
+#11 0x5acc9022851e <unknown>
+#12 0x5acc901f7be0 <unknown>
+#13 0x5acc9024b9b8 <unknown>
+#14 0x5acc9024bb88 <unknown>
+#15 0x5acc9025d4de <unknown>
+#16 0x7d4d9a2a3d64 <unknown>
+#17 0x7d4d9a3373fc <unknown>
+
+2026-04-12 22:02:26,468 WARNING   ⚠️ 2016-01-01 無資料（可能網頁未刷新）
+2026-04-12 22:02:26,672 INFO   已點擊下載: 水庫統計_20160101.xls
+2026-04-12 22:02:41,691 WARNING   ⚠️ 下載超時: 水庫統計_20160101.xls
+2026-04-12 22:03:18,598 WARNING   讀取表格失敗: Message: 
+Stacktrace:
+#0 0x5acc9025ea6a <unknown>
+#1 0x5acc8fc6dab5 <unknown>
+#2 0x5acc8fcc0676 <unknown>
+#3 0x5acc8fcc08b1 <unknown>
+#4 0x5acc8fd0b614 <unknown>
+#5 0x5acc8fd087b6 <unknown>
+#6 0x5acc8fcb3cbf <unknown>
+#7 0x5acc8fcb4a81 <unknown>
+#8 0x5acc90224a64 <unknown>
+#9 0x5acc90227951 <unknown>
+#10 0x5acc9021121e <unknown>
+#11 0x5acc9022851e <unknown>
+#12 0x5acc901f7be0 <unknown>
+#13 0x5acc9024b9b8 <unknown>
+#14 0x5acc9024bb88 <unknown>
+#15 0x5acc9025d4de <unknown>
+#16 0x7d4d9a2a3d64 <unknown>
+#17 0x7d4d9a3373fc <unknown>
+
+2026-04-12 22:03:18,598 WARNING   ⚠️ 2016-01-02 無資料（可能網頁未刷新）
+2026-04-12 22:03:18,815 INFO   已點擊下載: 水庫統計_20160102.xls
+2026-04-12 22:03:33,828 WARNING   ⚠️ 下載超時: 水庫統計_20160102.xls
+2026-04-12 22:03:47,799 INFO 
+使用者中斷！
+2026-04-12 22:03:47,802 WARNING Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ConnectionResetError(104, 'Connection reset by peer')': /session/03f313a9ea09b3c21c2959953c188050
+2026-04-12 22:03:47,803 WARNING Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError("HTTPConnection(host='localhost', port=51643): Failed to establish a new connection: [Errno 111] Connection refused")': /session/03f313a9ea09b3c21c2959953c188050
+2026-04-12 22:03:47,804 WARNING Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError("HTTPConnection(host='localhost', port=51643): Failed to establish a new connection: [Errno 111] Connection refused")': /session/03f313a9ea09b3c21c2959953c188050
