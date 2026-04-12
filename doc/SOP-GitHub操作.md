@@ -211,7 +211,7 @@ venv/
 | | - 執行：`docker exec thesis_python_dev python /app/src/gis_analysis/水庫蓄水範圍匯入.py` |
 ```
 
-### 2. `doc/論文研究資料庫.md` — 資料庫結構與技術細節
+### 2. `doc/技術筆記.md` — 資料庫結構與技術細節
 **目的：** 記錄資料庫結構、技術問題與解法（給日後發表或 Debug 用）
 
 **何時更新：**
@@ -225,7 +225,7 @@ venv/
 ### 文件更新順序建議
 1. 先完成功能（讓程式跑起來）
 2. 馬上更新 `doc/論文開發環境.md` 的開發日誌（最快）
-3. 若有技術細節要記錄，再補充 `doc/論文研究資料庫.md`
+3. 若有技術細節要記錄，再補充 `doc/技術筆記.md`
 4. **若資料庫 schema 有變更，同步更新 `database/schema.sql`**
 5. 最後 Git commit + push
 
