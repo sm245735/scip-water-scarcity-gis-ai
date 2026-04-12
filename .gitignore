@@ -1,6 +1,9 @@
 # 論文原始大資料不進 Git（重要！）
 data/
 *.csv
+
+# 但這些樣本要進 Git（進 Git 展示用）
+!data_samples/*.csv
 *.xlsx
 *.zip
 
