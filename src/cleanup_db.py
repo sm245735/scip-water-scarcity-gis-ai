@@ -1,8 +1,9 @@
+import os
 #!/usr/bin/env python3
 import psycopg2
 conn = psycopg2.connect(
     host='db', port=5432, user='sm245735',
-    password='DB_PASSWORD_PLACEHOLDER', database='thesis_analysis',
+    password=os.getenv('DB_PASSWORD'), database='thesis_analysis',
     connect_timeout=180
 )
 conn.set_isolation_level(0)  # autocommit

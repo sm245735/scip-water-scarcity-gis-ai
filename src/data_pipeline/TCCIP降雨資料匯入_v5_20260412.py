@@ -35,7 +35,7 @@ from datetime import datetime
 BASE_PATH = "/app/03. 資料/01. 氣候（TCCIP）"
 
 DB_USER = "sm245735"
-DB_PASS = "DB_PASSWORD_PLACEHOLDER"
+DB_PASS = os.getenv('DB_PASSWORD', '')
 DB_HOST = "db"
 DB_PORT = "5432"
 DB_NAME = "thesis_analysis"
