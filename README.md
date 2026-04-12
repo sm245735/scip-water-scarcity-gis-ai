@@ -215,10 +215,10 @@ DB_PASSWORD=your_password_here
 ## 📝 Commit 規範
 
 ```
-feat: 新功能說明（中文补充）
-fix: 修正問題（中文补充）
-docs: 文件更新（中文补充）
-refactor: 重構程式碼（中文补充）
+feat: 新功能說明（中文補充）
+fix: 修正問題（中文補充）
+docs: 文件更新（中文補充）
+refactor: 重構程式碼（中文補充）
 ```
 
 ---
