@@ -226,5 +226,26 @@ venv/
 1. 先完成功能（讓程式跑起來）
 2. 馬上更新 `doc/論文開發環境.md` 的開發日誌（最快）
 3. 若有技術細節要記錄，再補充 `doc/論文研究資料庫.md`
-4. 最後 Git commit + push
+4. **若資料庫 schema 有變更，同步更新 `database/schema.sql`**
+5. 最後 Git commit + push
+
+**📌 重要：`database/schema.sql` 是資料庫結構的最後堡壘！**
+
+每次新增或修改資料表，都要把 SQL schema 同步更新到 `database/schema.sql`。
+例如：
+- 新增 `reservoir_boundaries` 表 → 在 `schema.sql` 補上 `CREATE TABLE`
+- 新增索引或 constraint → 也要寫進 `schema.sql`
+
+```sql
+-- database/schema.sql 範例
+CREATE TABLE IF NOT EXISTS reservoir_boundaries (
+    id SERIAL PRIMARY KEY,
+    res_name VARCHAR(100),
+    area_description TEXT,
+    source VARCHAR(200),
+    build_date VARCHAR(20),
+    geom GEOMETRY(GeometryZ, 4326),
+    created_at TIMESTAMP DEFAULT '2026-04-12'
+);
+```
 
