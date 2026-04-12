@@ -42,3 +42,20 @@ CREATE INDEX IF NOT EXISTS idx_reservoir_geom ON reservoir_boundaries USING GIST
 -- SELECT area_name, COUNT(*) FROM rainfall_grid_data GROUP BY area_name;
 -- SELECT ST_AsText(geom), data_date, rainfall_mm FROM rainfall_grid_data LIMIT 3;
 -- SELECT res_name, ST_GeometryType(geom) FROM reservoir_boundaries LIMIT 5;
+
+-- reservoir_catchments 表
+-- 用途：台灣 839 個子集水區範圍
+-- 來源：水利相關單位（110年度）
+-- CRS：EPSG:4326（WGS84，由 EPSG:3826 轉換）
+CREATE TABLE IF NOT EXISTS reservoir_catchments (
+    id SERIAL PRIMARY KEY,
+    basin_id INTEGER,
+    basin_name VARCHAR(100),
+    ws_id INTEGER,
+    ws_name VARCHAR(100),
+    branch VARCHAR(100),
+    area_m2 NUMERIC,
+    geom GEOMETRY(Geometry, 4326),
+    created_at TIMESTAMP DEFAULT '2026-04-12'
+);
+CREATE INDEX IF NOT EXISTS idx_catchments_geom ON reservoir_catchments USING GIST(geom);
