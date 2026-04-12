@@ -2,6 +2,7 @@
 
 > 適用專案：scip-water-scarcity-gis-ai
 > 建立日期：2026-04-12
+> 更新日期：2026-04-12
 
 ---
 
@@ -68,6 +69,72 @@ git push origin main
 
 ---
 
+## 🔐 機密資訊管理（重要！）
+
+### 嚴禁將密碼寫進 Git！
+**`1qaz@WSX` 慘痛案例：** 密碼進了 GitHub 就等於公開，必須用 git history rewrite 才能清除。
+
+### 使用 .env 環境變數
+1. **建立 `.env` 檔案（不上 Git）**
+```bash
+# .env（此檔案不进 Git）
+DB_HOST=db
+DB_PORT=5432
+DB_NAME=postgres
+DB_USER=sm245735
+DB_PASSWORD=1qaz@WSX
+```
+
+2. **在 `.gitignore` 中排除 `.env`**
+```
+.env
+```
+
+3. **Python 程式這樣讀取**
+```python
+import os
+from dotenv import load_dotenv
+
+load_dotenv()  # 讀取 .env 檔案
+
+DB_URL = (
+    f"postgresql+psycopg2://"
+    f"{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@"
+    f"{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
+)
+```
+
+4. **`docker-compose.yml` 中引用**
+```yaml
+environment:
+  DB_HOST: ${DB_HOST}
+  DB_PASSWORD: ${DB_PASSWORD}
+  # ...
+```
+
+5. **第一次設定 .env 範例**
+```bash
+# 建立 .env 檔案
+cp .env.example .env
+# 編輯填入實際密碼
+nano .env
+```
+
+### 若密碼已進 Git（緊急處理）
+```bash
+# 安裝 git-filter-repo
+pip install git-filter-repo --break-system-packages
+
+# 重寫歷史（把所有 "舊密碼" 替換成 "DB_PASSWORD_PLACEHOLDER"）
+git filter-repo --replace-text <(echo "舊密碼==>DB_PASSWORD_PLACEHOLDER") --force
+
+# 重新設定 remote 並強制推送
+git remote add origin git@github.com:sm245735/scip-water-scarcity-gis-ai.git
+git push -u origin main --force
+```
+
+---
+
 ## ⚠️ 常見問題
 
 ### Q: Push 被拒絕（remote 有新 commits）
@@ -90,16 +157,20 @@ git log --oneline -5
 
 ---
 
-## 📂 .gitignore 內容
+## 📂 .gitignore 內容（已驗證）
+
 ```
-# 論文原始大資料不進 Git
+# 論文原始大資料不進 Git（重要！）
 data/
 *.csv
 *.xlsx
+*.zip
 
-# Python
+# Python 垃圾檔
 __pycache__/
 *.pyc
+*.py[cod]
+*$py.class
 *.egg-info/
 .eggs/
 
@@ -109,4 +180,15 @@ __pycache__/
 # OS
 .DS_Store
 Thumbs.db
+
+# Docker
+.docker/
+.dockerignore
+
+# 虛擬環境
+venv/
+.venv/
+
+# 環境變數（存資料庫密碼，不能公開）
+.env
 ```
