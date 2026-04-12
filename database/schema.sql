@@ -59,3 +59,24 @@ CREATE TABLE IF NOT EXISTS reservoir_catchments (
     created_at TIMESTAMP DEFAULT '2026-04-12'
 );
 CREATE INDEX IF NOT EXISTS idx_catchments_geom ON reservoir_catchments USING GIST(geom);
+
+-- reservoir_daily 錶
+-- 用途：水庫每日即時水情（每日收集，逐步建立歷史資料庫）
+-- 來源：水利署 OpenData API（opendata.wra.gov.tw）
+-- 更新頻率：每小時（即時收集，每日執行一次）
+-- 覆蓋：全台灣 49 個水庫
+CREATE TABLE IF NOT EXISTS reservoir_daily (
+    id SERIAL PRIMARY KEY,
+    reservoir_id VARCHAR(10),
+    reservoir_name VARCHAR(50),
+    observation_time TIMESTAMP,
+    effective_storage_萬噸 NUMERIC(12,2),
+    water_level_m NUMERIC(10,3),
+    inflow_cms NUMERIC(10,3),
+    total_outflow_cms NUMERIC(10,3),
+    catchment_rainfall_mm NUMERIC(8,2),
+    water_draw_cms NUMERIC(10,3),
+    api_collected_at TIMESTAMP DEFAULT '2026-04-12',
+    UNIQUE(reservoir_id, observation_time)
+);
+CREATE INDEX IF NOT EXISTS idx_reservoir_daily_id_time ON reservoir_daily(reservoir_id, observation_time);
