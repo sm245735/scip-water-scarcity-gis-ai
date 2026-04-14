@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 """
 =============================================================================
-水庫 Statistics.aspx Gap 填補腳本（Host 版，2026-01-02 ~ 2026-04-14）
+水庫 Statistics.aspx Gap 填補腳本（Host 版，2026-01-19 ~ 2026-04-14）
+=============================================================================
+修復：
+- START_DATE 改為 2026-01-19（DB 已有 2026-01-01 ~ 2026-01-18）
+- 每天處理完立刻 commit（不再等 50 天）
+- Chrome session 心跳檢查，失效時自動重連
 =============================================================================
 """
 
@@ -18,7 +23,7 @@ DB_HOST = "localhost"
 DB_PORT = "9235"
 DB_NAME = "thesis_analysis"
 DB_USER = "sm245735"
-DB_PASS = os.getenv("DB_PASSWORD", "1qaz@WSX")
+DB_PASS = os.environ["DB_PASSWORD"]
 
 PROJECT_DIR = "/home/sm245735/.openclaw/workspace/scip-water-scarcity-gis-ai"
 OUTPUT_CSV = os.path.join(PROJECT_DIR, "data", "水庫統計_gap_2026.csv")
@@ -32,7 +37,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-START_DATE = datetime(2026, 1, 2)
+START_DATE = datetime(2026, 1, 19)
 END_DATE = datetime(2026, 4, 14)
 
 def get_driver():
@@ -98,6 +103,22 @@ def main():
         error = 0
 
         while current <= END_DATE:
+            # Chrome session 心跳檢查
+            try:
+                _ = driver.current_url
+            except Exception:
+                logger.warning("Chrome session 失效，重新連線...")
+                driver.quit()
+                time.sleep(5)
+                driver = get_driver()
+                driver.get("https://fhy.wra.gov.tw/ReservoirPage_2011/Statistics.aspx")
+                time.sleep(10)
+                driver.execute_script(
+                    "var s=document.getElementById('ctl00_cphMain_cboSearch');"
+                    "if(s){s.value='全部';s.dispatchEvent(new Event('change',{bubbles:true}));}"
+                )
+                time.sleep(8)
+
             try:
                 set_date_select(driver, current)
                 driver.execute_script("document.getElementById('ctl00_cphMain_btnQuery').click();")
@@ -148,6 +169,7 @@ def main():
 
                 logger.info(f"  {current.date()} → {len(data_rows)} 筆")
                 success += 1
+                conn.commit()  # 每天處理完立刻 commit
 
             except Exception as e:
                 logger.error(f"  {current.date()} 失敗：{e}")
@@ -155,11 +177,7 @@ def main():
 
             current += timedelta(days=1)
 
-            if success % 50 == 0 and success > 0:
-                conn.commit()
-                logger.info(f"  [已提交] 完成 {success} 天...")
-
-        conn.commit()
+        conn.commit()  # 最後一次 commit
         csv_file.close()
         cur.close()
         conn.close()

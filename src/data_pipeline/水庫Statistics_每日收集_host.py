@@ -23,7 +23,7 @@ DB_HOST = "localhost"
 DB_PORT = "9235"
 DB_NAME = "thesis_analysis"
 DB_USER = "sm245735"
-DB_PASS = os.getenv("DB_PASSWORD", "1qaz@WSX")
+DB_PASS = os.environ["DB_PASSWORD"]
 
 LOG_FILE = "/home/sm245735/.openclaw/workspace/logs/wra_daily_statistics.log"
 os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
