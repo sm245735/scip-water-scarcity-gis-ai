@@ -120,10 +120,8 @@ CREATE TABLE IF NOT EXISTS reservoir_daily (
     storage_rate         NUMERIC(7,2),            -- 蓄水率（%）（放超過 999.99% 的值）
 
     -- 唯一約束（同一水庫同一天只有一筆記錄）
-    UNIQUE(data_date, reservoir_id),
-
-    -- 外部鍵約束（參照 reservoirs 表）
-    FOREIGN KEY (reservoir_id) REFERENCES reservoirs(reservoir_id)
+    CONSTRAINT fk_reservoir FOREIGN KEY (reservoir_id) REFERENCES reservoirs(reservoir_id),
+    UNIQUE(data_date, reservoir_id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_reservoir_daily_date       ON reservoir_daily(data_date);
