@@ -1,4 +1,4 @@
-# SCIP Water Scarcity GIS-AI
+# SCIP (Science Park) Water Scarcity GIS-AI
 
 > 基於 GIS 空間分析與 LSTM 時間序列預測之水資源風險評估系統
 >
