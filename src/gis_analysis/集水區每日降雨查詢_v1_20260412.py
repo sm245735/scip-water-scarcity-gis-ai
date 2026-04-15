@@ -29,7 +29,7 @@ SQL 邏輯（學長提供）：
 
 import os
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from urllib.parse import quote_plus
 
 # =============================================
@@ -72,19 +72,28 @@ def query_catchment_rainfall(
     pd.DataFrame
         含 basin_name, data_date, avg_catchment_rainfall 的 DataFrame
     """
-    # 組成 WHERE 子句
-    conditions = [f"r.area_name = '{area_name}'"]
+    # 組合參數
+    params = {"area_name": area_name}
     if basin_names:
-        names_str = ", ".join([f"'{n}'" for n in basin_names])
-        conditions.append(f"c.basin_name IN ({names_str})")
+        params["basin_names"] = basin_names
     if start_date:
-        conditions.append(f"r.data_date >= '{start_date}'")
+        params["start_date"] = start_date
     if end_date:
-        conditions.append(f"r.data_date <= '{end_date}'")
+        params["end_date"] = end_date
 
-    where_clause = " AND ".join(conditions)
+    # 動態 WHERE 子句（避免 SQL injection）
+    where_parts = ["r.area_name = :area_name"]
+    if basin_names:
+        for i, bn in enumerate(basin_names):
+            params[f"bn_{i}"] = bn
+        in_clause = ", ".join([f":bn_{i}" for i in range(len(basin_names))])
+        where_parts.append(f"c.basin_name IN ({in_clause})")
+    if start_date:
+        where_parts.append("r.data_date >= :start_date")
+    if end_date:
+        where_parts.append("r.data_date <= :end_date")
 
-    sql = f"""
+    sql = text(f"""
         SELECT
             c.basin_name,
             r.data_date,
@@ -96,17 +105,17 @@ def query_catchment_rainfall(
         ON
             ST_Intersects(r.geom, c.geom)
         WHERE
-            {where_clause}
+            {" AND ".join(where_parts)}
         GROUP BY
             c.basin_name,
             r.data_date
         ORDER BY
             c.basin_name,
-            r.data_date;
-    """
+            r.data_date
+    """)
 
     engine = create_engine(DB_URL)
-    df = pd.read_sql(sql, engine)
+    df = pd.read_sql(sql, engine, params=params)
     engine.dispose()
     return df
 

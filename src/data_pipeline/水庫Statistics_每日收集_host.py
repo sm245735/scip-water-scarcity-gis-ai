@@ -101,7 +101,13 @@ def main():
 
             rid = name_to_id[name]
             obs_time_str = cells[1].text.strip()
-            obs_time = None if obs_time_str in ('--', '', 'NULL') else obs_time_str
+            if obs_time_str in ('--', '', 'NULL'):
+                obs_time = None
+            else:
+                try:
+                    obs_time = datetime.strptime(obs_time_str, "%Y/%m/%d %H:%M")
+                except ValueError:
+                    obs_time = None  # 格式不符則寫入 NULL
             basin_rainfall = parse_num(cells[2].text)
             inflow = parse_num(cells[3].text)
             water_level = parse_num(cells[4].text)
