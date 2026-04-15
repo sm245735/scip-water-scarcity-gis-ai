@@ -48,7 +48,7 @@ CSV_MAP = {
 }
 
 TARGET_TABLE = "rainfall_grid_data"
-IMPORT_TIMESTAMP = datetime(2026, 4, 12)
+IMPORT_TIMESTAMP = datetime.now()  # 匯入當下時間
 CHUNK_SIZE = 10000  # 每批寫入列數（降低以避免記憶體不足）
 
 
