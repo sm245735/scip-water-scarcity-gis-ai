@@ -83,7 +83,7 @@ def main():
             ws_name VARCHAR(100),
             branch VARCHAR(100),
             area_m2 NUMERIC,
-            geom GEOMETRY(Geometry, 4326),
+            geom GEOMETRY(MultiPolygon, 4326),
             created_at TIMESTAMP DEFAULT '2026-04-12'
         );
     """)
