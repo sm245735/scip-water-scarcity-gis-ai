@@ -38,3 +38,6 @@ venv/
 **/check_todos.py
 **/project_health_check.py
 **/memory_maintenance.py
+
+# Log 檔（每日收集歷史，不進 Git）
+src/logs/

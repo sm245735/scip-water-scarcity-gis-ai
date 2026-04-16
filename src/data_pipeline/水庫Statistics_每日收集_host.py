@@ -7,7 +7,7 @@
 使用：Chrome Remote Debugging on localhost:18800
 
 Crontab（主機端）：
-    0 1 * * * /home/sm245735/.openclaw/workspace/scip-water-scarcity-gis-ai/src/data_pipeline/水庫Statistics_每日收集_host.py >> /home/sm245735/.openclaw/workspace/logs/wra_daily_statistics.log 2>&1
+    0 1 * * * /home/sm245735/.openclaw/workspace/scip-water-scarcity-gis-ai/src/data_pipeline/水庫Statistics_每日收集_host.py >> /home/sm245735/.openclaw/workspace/scip-water-scarcity-gis-ai/src/logs/YYYYMMDD.log 2>&1
 """
 
 import os, time, logging
@@ -25,13 +25,17 @@ DB_NAME = "thesis_analysis"
 DB_USER = "sm245735"
 DB_PASS = os.environ["DB_PASSWORD"]
 
-LOG_FILE = "/home/sm245735/.openclaw/workspace/logs/wra_daily_statistics.log"
-os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
+LOG_DIR = "/home/sm245735/.openclaw/workspace/scip-water-scarcity-gis-ai/src/logs/"
+os.makedirs(LOG_DIR, exist_ok=True)
+
+# 每天一個 LOG 檔，檔名：YYYYMMDD.log
+log_date_str = (date_type.today() - timedelta(days=1)).strftime("%Y%m%d")
+LOG_FILE = os.path.join(LOG_DIR, f"{log_date_str}.log")
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(message)s",
-    handlers=[logging.FileHandler(LOG_FILE), logging.StreamHandler()]
+    handlers=[logging.FileHandler(LOG_FILE, encoding="utf-8"), logging.StreamHandler()]
 )
 logger = logging.getLogger(__name__)
 
