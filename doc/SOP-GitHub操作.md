@@ -240,11 +240,11 @@ venv/
 -- database/schema.sql 範例
 CREATE TABLE IF NOT EXISTS reservoir_boundaries (
     id SERIAL PRIMARY KEY,
-    res_name VARCHAR(100),
+    reservoir_name VARCHAR(100),
     area_description TEXT,
     source VARCHAR(200),
     build_date VARCHAR(20),
-    geom GEOMETRY(GeometryZ, 4326),
+    geom GEOMETRY(MultiPolygon, 4326),
     created_at TIMESTAMP DEFAULT '2026-04-12'
 );
 ```

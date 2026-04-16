@@ -17,7 +17,7 @@
 
 資料庫目的地：
     Table: reservoir_boundaries
-    欄位：id, res_name, area_description, source, build_date, geom(GeometryZ, 4326), created_at
+    欄位：id, reservoir_name, area_description, source, build_date, geom(MultiPolygon, 4326), created_at
 
 執行方式：
     docker exec thesis_python_dev python /app/src/gis_analysis/水庫蓄水範圍匯入.py
@@ -69,15 +69,15 @@ def main():
     )
     cur = raw_conn.cursor()
 
-    # 建立 Table（如不存在，GeometryZ 支援 3D 幾何）
+    # 建立 Table（如不存在，MultiPolygon 明確指定）
     cur.execute(f"""
         CREATE TABLE IF NOT EXISTS {TARGET_TABLE} (
             id SERIAL PRIMARY KEY,
-            res_name VARCHAR(100),
+            reservoir_name VARCHAR(100),
             area_description TEXT,
             source VARCHAR(200),
             build_date VARCHAR(20),
-            geom GEOMETRY(GeometryZ, 4326),
+            geom GEOMETRY(MultiPolygon, 4326),
             created_at TIMESTAMP DEFAULT '2026-04-12'
         );
     """)
@@ -93,7 +93,7 @@ def main():
 
         cur.execute(
             f"INSERT INTO {TARGET_TABLE} "
-            f"(res_name, area_description, source, build_date, geom) "
+            f"(reservoir_name, area_description, source, build_date, geom) "
             f"VALUES (%s, %s, %s, %s, ST_SetSRID(ST_Force3DZ(ST_GeomFromWKB(%s)), 4326));",
             (res_name, area_desc, "水利地理資訊服務平台", "2024-06-17", psycopg2.Binary(geom_wkb))
         )
