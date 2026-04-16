@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS rainfall_grid_data (
 );
 CREATE INDEX IF NOT EXISTS idx_rainfall_date ON rainfall_grid_data(data_date);
 CREATE INDEX IF NOT EXISTS idx_rainfall_area ON rainfall_grid_data(area_name);
+CREATE INDEX IF NOT EXISTS idx_rainfall_area_date ON rainfall_grid_data(area_name, data_date);
 CREATE INDEX IF NOT EXISTS idx_rainfall_geom ON rainfall_grid_data USING GIST(geom);
 
 -- 2. reservoir_boundaries（水庫實體蓄水範圍 Shapefile）
