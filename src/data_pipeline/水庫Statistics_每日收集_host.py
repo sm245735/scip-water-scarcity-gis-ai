@@ -114,7 +114,7 @@ def main():
             full_water_level = parse_num(cells[5].text)
             effective_storage = parse_num(cells[6].text, remove_comma=True)
             storage_rate = parse_num(cells[7].text, remove_percent=True)
-            outflow = parse_num(cells[17].text) if len(cells) > 17 else None
+            outflow = parse_num(cells[9].text) if len(cells) > 9 else None
 
             cur.execute("""
                 INSERT INTO reservoir_daily (
