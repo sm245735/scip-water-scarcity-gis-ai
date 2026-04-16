@@ -32,7 +32,6 @@ venv/
 
 # 環境變數（存資料庫密碼，不能公開）
 .env
-!data/reservoir_id_map.csv
 
 # === 排程腳本不進 Git（安全考量）===
 **/spawn_coder_for_review.py
