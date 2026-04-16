@@ -24,7 +24,7 @@ import os
 import geopandas as gpd
 import pandas as pd
 from shapely.geometry import MultiPolygon, Polygon
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from urllib.parse import quote_plus
 
 # =============================================
@@ -86,8 +86,17 @@ def query_rainfall(basin_names: list, start_date: str, end_date: str) -> pd.Data
         print("沒有集水區，請確認縣市界線資料")
         return pd.DataFrame()
 
-    names_str = ", ".join([f"'{n}'" for n in basin_names])
-    sql = f"""
+    params = {
+        "start_date": start_date,
+        "end_date": end_date,
+    }
+    in_parts = []
+    for i, bn in enumerate(basin_names):
+        params[f"bn_{i}"] = bn
+        in_parts.append(f":bn_{i}")
+    in_clause = ", ".join(in_parts)
+
+    sql = text(f"""
         SELECT
             c.basin_name,
             r.data_date,
@@ -99,17 +108,17 @@ def query_rainfall(basin_names: list, start_date: str, end_date: str) -> pd.Data
         ON
             ST_Intersects(r.geom, c.geom)
         WHERE
-            r.data_date BETWEEN '{start_date}' AND '{end_date}'
-            AND c.basin_name IN ({names_str})
+            r.data_date BETWEEN :start_date AND :end_date
+            AND c.basin_name IN ({in_clause})
         GROUP BY
             c.basin_name,
             r.data_date
         ORDER BY
             c.basin_name,
             r.data_date;
-    """
+    """)
     engine = create_engine(DB_URL)
-    df = pd.read_sql(sql, engine)
+    df = pd.read_sql(sql, engine, params=params)
     engine.dispose()
     return df
 
