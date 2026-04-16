@@ -72,7 +72,7 @@ git push origin main
 ## 🔐 機密資訊管理(重要!)
 
 ### 嚴禁將密碼寫進 Git!
-**`1qaz@WSX` 慘痛案例:** 密碼進了 GitHub 就等於公開,必須用 git history rewrite 才能清除。
+**`<YOUR_PASSWORD>` 慘痛案例:** 密碼進了 GitHub 就等於公開,必須用 git history rewrite 才能清除。
 
 ### 使用 .env 環境變數
 1. **建立 `.env` 檔案(不上 Git)**
@@ -82,7 +82,7 @@ DB_HOST=db
 DB_PORT=5432
 DB_NAME=postgres
 DB_USER=sm245735
-DB_PASSWORD=1qaz@WSX
+DB_PASSWORD=your_password_here
 ```
 
 2. **在 `.gitignore` 中排除 `.env`**
