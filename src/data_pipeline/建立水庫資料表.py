@@ -4,13 +4,18 @@
 水庫資料庫建立腳本
 =============================================================================
 用途：初始化資料庫（建立 reservoirs + reservoir_daily 表）
-注意：本腳本會 DROP 舊有 tables
 
 使用：
+    # 一般初始化（有確認提示）
     docker exec thesis_python_dev python /app/src/data_pipeline/建立水庫資料表.py
+
+    # 強制執行（不詢問，適用於 CI/自動化）
+    docker exec thesis_python_dev python /app/src/data_pipeline/建立水庫資料表.py --force
+
+⚠️  注意：本腳本會 DROP 舊有 tables！帶 --force 才會實際刪除。
 """
 
-import psycopg2, os
+import psycopg2, os, sys, argparse
 
 DB_HOST = os.environ.get("DB_HOST", "db")
 DB_PORT = os.environ.get("DB_PORT", "5432")
@@ -24,12 +29,33 @@ def get_conn():
         user=DB_USER, password=DB_PASSWORD
     )
 
-def create_tables(conn):
+def create_tables(conn, force=False):
     cur = conn.cursor()
 
+    # 檢查 tables 是否已有資料
+    cur.execute("""
+        SELECT tablename FROM pg_tables
+        WHERE schemaname = 'public'
+        AND tablename IN ('reservoirs', 'reservoir_daily')
+    """)
+    existing = [r[0] for r in cur.fetchall()]
+
+    if existing and not force:
+        cur.execute("SELECT COUNT(*) FROM reservoir_daily")
+        row_count = cur.fetchone()[0]
+        print(f"⚠️  reservoir_daily 已有 {row_count} 筆資料！")
+        print("如要繼續，請加上 --force 參數：")
+        print("  python 建立水庫資料表.py --force")
+        print("不放棄，請按 Ctrl+C。")
+        sys.exit(1)
+
+    if force and existing:
+        print("⚠️  --force 已設定，開始刪除舊 tables...")
+        cur.execute("DROP TABLE IF EXISTS reservoir_daily CASCADE")
+        cur.execute("DROP TABLE IF EXISTS reservoirs CASCADE")
+        print("  已刪除舊 tables")
+
     # 1. reservoirs（MDM 水庫主數據表）
-    cur.execute("DROP TABLE IF EXISTS reservoir_daily CASCADE")
-    cur.execute("DROP TABLE IF EXISTS reservoirs CASCADE")
     cur.execute("""
         CREATE TABLE reservoirs (
             reservoir_id       INTEGER PRIMARY KEY,
@@ -69,8 +95,8 @@ def create_tables(conn):
     print("✅ reservoir_daily 建立完成（data_date + FK）")
 
     # 索引
-    cur.execute("CREATE INDEX idx_reservoir_daily_date       ON reservoir_daily(data_date)")
-    cur.execute("CREATE INDEX idx_reservoir_daily_reservoir ON reservoir_daily(reservoir_id)")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_reservoir_daily_date       ON reservoir_daily(data_date)")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_reservoir_daily_reservoir ON reservoir_daily(reservoir_id)")
     print("✅ 索引建立完成")
 
     cur.close()
@@ -90,15 +116,23 @@ def populate_geom(conn):
     print(f"✅ geom 填補完成：{updated} 筆")
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="水庫資料庫建立腳本")
+    parser.add_argument("--force", action="store_true",
+                        help="強制刪除舊 tables 後重建（無確認提示）")
+    args = parser.parse_args()
+
     print("=" * 60)
     print("水庫資料庫建立腳本")
     print("=" * 60)
+    if args.force:
+        print("⚠️  --force 已設定，將刪除舊 tables！")
+    print()
 
     conn = get_conn()
     print("已連線到資料庫\n")
 
     print("📦 建立資料表...")
-    create_tables(conn)
+    create_tables(conn, force=args.force)
 
     print("\n📍 填補 geom...")
     populate_geom(conn)
