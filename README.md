@@ -131,10 +131,16 @@ scip-water-scarcity-gis-ai/
 ├── src/
 │   ├── data_pipeline/
 │   │   ├── 水庫Statistics_每日收集_host.py   # 每日 01:00 收集
-│   │   ├── 建立水庫資料表並匯入_v2.py         # DB 建表 + 匯入
-│   │   └── TCCIP降雨資料匯入_v5.py           # TCCIP 降雨匯入
+│   │   ├── 建立水庫資料表.py                 # DB 建表 + 匯入
+│   │   ├── TCCIP降雨資料匯入_v5_20260412.py  # TCCIP 降雨匯入
+│   │   ├── check_todos.py                    # 待辦事項檢查工具
+│   │   └── spawn_coder_for_review.py         # 程式碼審查發包腳本
 │   └── gis_analysis/
-│       └── 頭前溪集水區降雨_SpatialJoin_v5.py  # PostGIS 空間查詢
+│       ├── 集水區匯入_v1_20260412.py          # 集水區邊界匯入
+│       ├── 集水區每日降雨查詢_v1_20260412.py  # 集水區每日降雨查詢
+│       ├── 新竹集水區每日降雨查詢_v1_20260412.py  # 新竹集水區降雨查詢
+│       ├── 水庫蓄水範圍匯入_v1_20260412.py    # 水庫蓄水範圍匯入
+│       └── 竹科降雨資料匯出_v1_20260412.py   # 竹科降雨資料匯出
 ├── frontend/                   # ArcGIS JS 前端（待建）
 ├── models/                     # LSTM 模型腳本（待建）
 ├── notebooks/                  # Jupyter 分析（待建）
@@ -183,7 +189,7 @@ docker compose up -d
 ### 2. 初始化資料庫
 
 ```bash
-docker exec thesis_python_dev python /app/src/data_pipeline/建立水庫資料表並匯入_v2.py
+docker exec thesis_python_dev python /app/src/data_pipeline/建立水庫資料表.py
 ```
 
 ### 3. 每日水庫資料收集（凌晨 01:00 自動執行）
