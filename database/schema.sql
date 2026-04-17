@@ -87,6 +87,11 @@ CREATE TABLE IF NOT EXISTS reservoirs (
     lat               DOUBLE PRECISION,            -- 水庫中心緯度（可留空，等座標檔）
     geom              GEOMETRY(Point, 4326),       -- 水庫位置 point（可留空，等座標檔）
 
+    -- 蓄水範圍（從 reservoir_boundaries shapefile 同步而來，2026-04-17）
+    boundary_geom     GEOMETRY(MultiPolygon, 4326), -- 水庫蓄水範圍多邊形
+    boundary_source   VARCHAR(200),                -- 資料來源（如「水利地理資訊服務平台」）
+    boundary_build_date VARCHAR(20),              -- 興建日期
+
     -- 多來源 ID 對照（解決政府各單位代碼不一致的痛點）
     soap_id           VARCHAR(20),                 -- SOAP API 的 ST_NO
     opendata_id       VARCHAR(20),                 -- opendata.wra.gov.tw 的 ID
