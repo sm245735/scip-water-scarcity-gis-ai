@@ -33,7 +33,7 @@ def parse_todos_from_tech_notes():
     
     todos = []
     # 匹配 - [ ] 待辦事項 或 ✅ 已完成 或 ⏳ 進行中
-    pattern = r'([-]\s*\[([ x])\]\s*[✅⏳]?\s*(.+?)(?=\n|$)'
+    pattern = r'([-]\s*\[([ x])\])\s*[✅⏳]?\s*(.+?)(?=\n|$)'
     for match in re.finditer(pattern, content):
         status = match.group(2)  # ' ' = 未完成, 'x' = 已完成
         text = match.group(3).strip()
