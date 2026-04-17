@@ -52,8 +52,7 @@ CREATE INDEX IF NOT EXISTS idx_reservoir_geom ON reservoir_boundaries USING GIST
 -- CRS：EPSG:4326（WGS84）
 -- 調整（2026-04-15 學長）：
 --   - geom 明確指定為 MultiPolygon，確保 CRS 為 4326
---   - created_at → CURRENT_TIMESTAMP
-CREATE TABLE IF NOT EXISTS reservoir_catchments (
+
     id SERIAL PRIMARY KEY,
     basin_id INTEGER,
     basin_name VARCHAR(100),               -- 所屬流域（如「頭前溪」）
