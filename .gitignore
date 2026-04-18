@@ -34,8 +34,7 @@ venv/
 .env
 
 # === 排程腳本不進 Git（安全考量）===
-**/spawn_coder_for_review.py
-**/check_todos.py
+
 **/project_health_check.py
 **/memory_maintenance.py
 
