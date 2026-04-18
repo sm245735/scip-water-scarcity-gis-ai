@@ -1,6 +1,10 @@
 MIT License
 
-Copyright (c) 2026 楊世銘 (Yang Steven)
+Copyright (c) 2026 康康 (sm245735)
+
+本專案為碩士論文研究成果：
+「基於 GIS 空間分析與 LSTM 時間序列預測之水資源風險評估系統」
+國立政治大學 行政管理碩士學程
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +23,21 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+## 資料授權說明
+
+本 repo 中的程式碼採 MIT License 授權。
+
+但 `data/` 與 `data_samples/` 中的原始資料（TCCIP 降雨、水利署水庫水情、
+集水區 shapefile）版權歸各資料提供單位所有，使用時請遵守原單位之授權規定：
+
+- TCCIP：國家科學及技術委員會「臺灣氣候變遷推估資訊與調適知識平台」
+- 水利署：經濟部水利署 fhy.wra.gov.tw
+- 集水區 shapefile：經濟部水利署 110 年度資料
+
+如在學術研究中使用本專案，請引用：
+
+康康（2026）。基於 GIS 空間分析與 LSTM 時間序列預測之水資源風險評估系統
+——以新竹科學園區供水風險為例。國立政治大學行政管理碩士學程碩士論文。
