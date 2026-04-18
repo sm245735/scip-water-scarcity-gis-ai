@@ -6,8 +6,8 @@
 功能說明：
     讀取水庫蓄水範圍 shapefile (ressub.shp)，
     轉換座標系統 (EPSG:3826 → EPSG:4326) 後，
-    使用 ST_SetSRID + ST_Force3DZ + ST_GeomFromWKB 寫入 PostgreSQL/PostGIS。
-    注意：原始 shapefile 幾何為 3D (PolygonZ)，需用 ST_Force3DZ 保留 Z 維度。
+    使用 ST_SetSRID + ST_Force2D + ST_GeomFromWKB 寫入 PostgreSQL/PostGIS。
+    注意：原始 shapefile 幾何為 3D (PolygonZ)，需用 ST_Force2D 移除 Z 維度以符合 schema 約束。
 
 資料來源：
     /app/data/水資源（水庫蓄水）/ressub.shp
@@ -24,6 +24,7 @@
 
 歷程：
     2026-04-12 v1：初始版本，解決 Z dimension 問題（ST_Force3DZ）
+    2026-04-18 v2：改用 ST_Force2D（schema 為 2D MultiPolygon，強制保留 Z 會被 PostGIS 拒絕）
 """
 
 import os
@@ -94,7 +95,7 @@ def main():
         cur.execute(
             f"INSERT INTO {TARGET_TABLE} "
             f"(reservoir_name, area_description, source, build_date, geom) "
-            f"VALUES (%s, %s, %s, %s, ST_SetSRID(ST_Force3DZ(ST_GeomFromWKB(%s)), 4326));",
+            f"VALUES (%s, %s, %s, %s, ST_SetSRID(ST_Force2D(ST_GeomFromWKB(%s)), 4326));",
             (res_name, area_desc, "水利地理資訊服務平台", "2024-06-17", psycopg2.Binary(geom_wkb))
         )
         inserted += 1
