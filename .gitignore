@@ -1,6 +1,8 @@
 # 論文原始大資料不進 Git（重要！）
 data/
 *.csv
+# 但 data/LICENSE 要進 Git（CC BY 4.0 授權聲明）
+!data/LICENSE
 
 # 但這些樣本要進 Git（進 Git 展示用）
 !data_samples/*.csv
@@ -32,8 +34,6 @@ venv/
 
 # 環境變數（存資料庫密碼，不能公開）
 .env
-# 環境變數範本（可進 Git，但不要放真實密碼）
-.env.example
 
 # === 排程腳本不進 Git（安全考量）===
 
