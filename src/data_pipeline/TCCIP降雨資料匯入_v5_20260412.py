@@ -36,8 +36,8 @@ BASE_PATH = "/app/03. 資料/01. 氣候（TCCIP）"
 
 DB_USER = "sm245735"
 DB_PASS = os.getenv('DB_PASSWORD', '')
-DB_HOST = "db"
-DB_PORT = "5432"
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_PORT = os.getenv("DB_PORT", "5432")
 DB_NAME = "thesis_analysis"
 DB_URL = f"postgresql+psycopg2://{DB_USER}:{quote_plus(DB_PASS)}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 

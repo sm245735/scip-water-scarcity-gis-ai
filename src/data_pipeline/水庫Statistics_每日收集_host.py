@@ -19,8 +19,8 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 
-DB_HOST = "localhost"
-DB_PORT = "9235"
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_PORT = os.getenv("DB_PORT", "5432")
 DB_NAME = "thesis_analysis"
 DB_USER = "sm245735"
 DB_PASS = os.environ["DB_PASSWORD"]
