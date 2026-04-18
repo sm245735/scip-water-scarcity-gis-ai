@@ -57,7 +57,7 @@ def get_hsinchu_basins():
 
     # 轉換至 EPSG:4326
     hsinchu_gdf = hsinchu_gdf.to_crs(epsg=4326)
-    hsinchu_geom = hsinchu_gdf.unary_union  # 合併成一個 MultiPolygon
+    hsinchu_geom = hsinchu_gdf.geometry.union_all()  # 合併成一個 MultiPolygon（GeoPandas 1.0+）
     print(f"  合併後範圍：{hsinchu_geom}")
 
     # 查詢所有集水區，過濾出落在新竹縣市內的
