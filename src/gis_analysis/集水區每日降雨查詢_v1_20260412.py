@@ -21,16 +21,21 @@ SQL 邏輯（學長提供）：
 資料庫：thesis_analysis
 
 執行方式：
-    docker exec thesis_python_dev python /app/src/gis_analysis/集水區每日降雨查詢.py
+    docker exec thesis_python_dev python /app/src/gis_analysis/集水區每日降雨查詢_v1_20260412.py
+    # 本地環境：PROJECT_ROOT=/path/to/repo python src/gis_analysis/集水區每日降雨查詢_v1_20260412.py
 
 歷程：
     2026-04-12 v1：初始版本
 """
 
 import os
+import sys
 import pandas as pd
 from sqlalchemy import create_engine, text
 from urllib.parse import quote_plus
+
+sys.path.insert(0, str(os.path.join(os.path.dirname(__file__), '..', 'utils')))
+from path_utils import DATA_DIR
 
 # =============================================
 # 設定區
@@ -137,7 +142,7 @@ def main():
         print(f"集水區數量：{df['basin_name'].nunique()}")
         print(df.head(10))
         # 匯出 CSV（可餵給 LSTM 模型）
-        output_path = "/app/data/集水區每日降雨量_2023.csv"
+        output_path = str(DATA_DIR / "集水區每日降雨量_2023.csv")
         df.to_csv(output_path, index=False, encoding='utf-8-sig')
         print(f"\n已匯出：{output_path}")
     else:

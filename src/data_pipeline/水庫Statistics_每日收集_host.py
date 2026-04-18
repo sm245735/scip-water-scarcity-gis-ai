@@ -11,6 +11,7 @@ Crontab（主機端）：
 """
 
 import os, time, logging
+from pathlib import Path
 from datetime import datetime, timedelta, date as date_type
 import psycopg2
 from selenium import webdriver
@@ -25,12 +26,12 @@ DB_NAME = "thesis_analysis"
 DB_USER = "sm245735"
 DB_PASS = os.environ["DB_PASSWORD"]
 
-LOG_DIR = "/home/sm245735/.openclaw/workspace/scip-water-scarcity-gis-ai/src/logs/"
-os.makedirs(LOG_DIR, exist_ok=True)
+LOG_DIR = Path(__file__).parent.parent.parent.resolve() / "src" / "logs"
+LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 # 每天一個 LOG 檔，檔名：YYYYMMDD.log
 log_date_str = (date_type.today() - timedelta(days=1)).strftime("%Y%m%d")
-LOG_FILE = os.path.join(LOG_DIR, f"{log_date_str}.log")
+LOG_FILE = LOG_DIR / f"{log_date_str}.log"
 
 logging.basicConfig(
     level=logging.INFO,

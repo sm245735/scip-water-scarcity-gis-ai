@@ -17,11 +17,13 @@ Cron 設定（每天 03:30）：
 """
 
 import os, re, glob
+from pathlib import Path
 from datetime import datetime
 
-PROJECT_DIR = "/home/sm245735/.openclaw/workspace/scip-water-scarcity-gis-ai"
-TECH_NOTES = os.path.join(PROJECT_DIR, "doc", "技術筆記.md")
-TODO_FILE = os.path.join(PROJECT_DIR, "doc", "待辦事項.md")
+# 專案根目錄（相對路徑）
+PROJECT_DIR = Path(__file__).parent.parent.parent.resolve()
+TECH_NOTES = PROJECT_DIR / "doc" / "技術筆記.md"
+TODO_FILE = PROJECT_DIR / "doc" / "待辦事項.md"
 
 def parse_todos_from_tech_notes():
     """解析技術筆記.md 中所有待辦事項的狀態"""

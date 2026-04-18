@@ -12,9 +12,13 @@
 
 import pandas as pd
 import os
+import sys
+
+sys.path.insert(0, str(os.path.join(os.path.dirname(__file__), '..', 'utils')))
+from path_utils import TCCIP_DATA_DIR, DATA_DIR
 
 # 讀取 TCCIP 資料
-csv_path = '/app/data/03. 資料/01. 氣候（TCCIP）/tccip_daily_rainfall.csv'
+csv_path = str(TCCIP_DATA_DIR / "tccip_daily_rainfall.csv")
 df = pd.read_csv(csv_path)
 
 print(f"原始資料：{len(df)} 筆")
@@ -34,7 +38,7 @@ df_zhuke = df_zhuke.sort_values('date').reset_index(drop=True)
 print(f"竹科日期範圍：{df_zhuke['date'].min().date()} ~ {df_zhuke['date'].max().date()}")
 
 # 輸出
-out_path = '/app/data/竹科_每日降雨量_2019_2023.csv'
+out_path = str(DATA_DIR / '竹科_每日降雨量_2019_2023.csv')
 df_zhuke.to_csv(out_path, index=False)
 print(f"\n✅ 已匯出：{out_path}")
 print(f"   筆數：{len(df_zhuke)}")

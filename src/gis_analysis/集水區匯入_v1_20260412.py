@@ -8,7 +8,7 @@
     轉換座標系統 (EPSG:3826 → EPSG:4326) 後匯入 PostgreSQL/PostGIS。
 
 資料來源：
-    /app/data/05_集水區/（110年度全臺839子集水區範圍圖_UTF8.shp）
+    data/05_集水區/（110年度全臺839子集水區範圍圖_UTF8.shp）
     - 來源：台灣水利相關單位（110年度）
     - 筆數：839 個子集水區
     - CRS：EPSG:3826 (TWD97)
@@ -18,22 +18,24 @@
     欄位：basin_id, basin_name, ws_id, ws_name, branch, area_m2, geom, created_at
 
 執行方式：
-    docker exec thesis_python_dev python /app/src/gis_analysis/集水區匯入.py
+    docker exec thesis_python_dev python /app/src/gis_analysis/集水區匯入_v1_20260412.py
+    # 本地環境：PROJECT_ROOT=/path/to/repo python src/gis_analysis/集水區匯入_v1_20260412.py
 
 歷程：
     2026-04-12 v1：初始版本（EPSG:3826 → 4326）
 """
 
 import os
+import sys
 import glob
 import geopandas as gpd
 import psycopg2
 from urllib.parse import quote_plus
 
-# =============================================
-# 設定區
-# =============================================
-BASE_PATH = "/app/data/05_集水區"
+sys.path.insert(0, str(os.path.join(os.path.dirname(__file__), '..', 'utils')))
+from path_utils import CATCHMENT_DATA_DIR
+
+BASE_PATH = CATCHMENT_DATA_DIR  # data/05_集水區
 DB_USER = os.getenv('DB_USER', 'sm245735')
 DB_HOST = os.getenv('DB_HOST', 'db')
 DB_PORT = os.getenv('DB_PORT', '5432')

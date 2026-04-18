@@ -9,12 +9,13 @@
     3. 計算每個集水區每天的平均降雨量
 
 前置資料：
-    - 縣市界線：/app/data/03_GIS/COUNTY_MOI_1140318.shp（EPSG: TWD97）
+    - 縣市界線：data/03_GIS/COUNTY_MOI_1140318.shp（EPSG: TWD97）
     - 集水區：reservoir_catchments（EPSG: 4326）
     - 降雨點：rainfall_grid_data（EPSG: 4326）
 
 執行方式：
-    docker exec thesis_python_dev python /app/src/gis_analysis/新竹集水區每日降雨查詢.py
+    docker exec thesis_python_dev python /app/src/gis_analysis/新竹集水區每日降雨查詢_v1_20260412.py
+    # 本地環境：PROJECT_ROOT=/path/to/repo python src/gis_analysis/新竹集水區每日降雨查詢_v1_20260412.py
 
 歷程：
     2026-04-12 v1：新增縣市界線限縮，解決查詢過慢問題
@@ -30,7 +31,13 @@ from urllib.parse import quote_plus
 # =============================================
 # 設定區
 # =============================================
-GIS_PATH = "/app/data/03_GIS/COUNTY_MOI_1140318.shp"
+import os
+import sys
+
+sys.path.insert(0, str(os.path.join(os.path.dirname(__file__), '..', 'utils')))
+from path_utils import GIS_DATA_DIR, DATA_DIR
+
+GIS_PATH = str(GIS_DATA_DIR / "COUNTY_MOI_1140318.shp")  # data/03_GIS/COUNTY_MOI_1140318.shp
 DB_USER = os.getenv('DB_USER', 'sm245735')
 DB_PASS = quote_plus(os.getenv('DB_PASSWORD', ''))
 DB_HOST = os.getenv('DB_HOST', 'db')
@@ -148,7 +155,7 @@ def main():
         print(f"涵蓋集水區：{df['basin_name'].nunique()} 個")
         print(df.head(10))
         # 匯出 CSV
-        output = "/app/data/新竹縣市_集水區每日降雨量_2023.csv"
+        output = str(DATA_DIR / "新竹縣市_集水區每日降雨量_2023.csv")
         df.to_csv(output, index=False, encoding='utf-8-sig')
         print(f"\n已匯出：{output}")
     else:

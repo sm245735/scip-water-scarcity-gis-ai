@@ -10,7 +10,7 @@
     注意：原始 shapefile 幾何為 3D (PolygonZ)，需用 ST_Force2D 移除 Z 維度以符合 schema 約束。
 
 資料來源：
-    /app/data/水資源（水庫蓄水）/ressub.shp
+    data/水資源（水庫蓄水）/ressub.shp
     - 來源：水利地理資訊服務平台
     - 建置日期：2024-06-17
     - 筆數：129 個水庫
@@ -20,7 +20,10 @@
     欄位：id, reservoir_name, area_description, source, build_date, geom(MultiPolygon, 4326), created_at
 
 執行方式：
-    docker exec thesis_python_dev python /app/src/gis_analysis/水庫蓄水範圍匯入.py
+    # Docker 環境（容器內）
+    docker exec thesis_python_dev python /app/src/gis_analysis/水庫蓄水範圍匯入_v1_20260412.py
+    # 本地環境（使用 PROJECT_ROOT 或相對路徑）
+    PROJECT_ROOT=/path/to/repo python src/gis_analysis/水庫蓄水範圍匯入_v1_20260412.py
 
 歷程：
     2026-04-12 v1：初始版本，解決 Z dimension 問題（ST_Force3DZ）
@@ -35,7 +38,14 @@ from urllib.parse import quote_plus
 # =============================================
 # 設定區
 # =============================================
-BASE_PATH = "/app/data/水資源（水庫蓄水）"
+import os
+import sys
+
+# 將 src/utils 加入路徑，確保無論從哪個位置執行都能找到 path_utils
+sys.path.insert(0, str(os.path.join(os.path.dirname(__file__), '..', 'utils')))
+from path_utils import RESERVOIR_DATA_DIR
+
+BASE_PATH = RESERVOIR_DATA_DIR  # data/水資源（水庫蓄水）
 DB_USER = os.getenv('DB_USER', 'sm245735')
 DB_HOST = os.getenv('DB_HOST', 'db')
 DB_PORT = os.getenv('DB_PORT', '5432')

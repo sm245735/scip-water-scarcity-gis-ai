@@ -25,14 +25,18 @@ from shapely.geometry import Point
 from sqlalchemy import create_engine
 from urllib.parse import quote_plus
 import os
+import sys
 import glob
 import gc
 from datetime import datetime
 
+sys.path.insert(0, str(os.path.join(os.path.dirname(__file__), '..', 'utils')))
+from path_utils import TCCIP_DATA_DIR
+
 # ===========================================================================
 # 設定區
 # ===========================================================================
-BASE_PATH = "/app/03. 資料/01. 氣候（TCCIP）"
+BASE_PATH = TCCIP_DATA_DIR  # data/03. 資料/01. 氣候（TCCIP）
 
 DB_USER = "sm245735"
 DB_PASS = os.getenv('DB_PASSWORD', '')
