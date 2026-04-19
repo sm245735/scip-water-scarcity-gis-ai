@@ -40,15 +40,23 @@ class TestStructure:
         expected = {
             "data_date", "year", "month", "day_of_year",
             "doy_sin", "doy_cos",
-            "basin_rainfall_tccip_mm", "basin_rainfall_self_mm",
+            "basin_rainfall_tccip_mm",
+            "rainfall_7d_sum",        # 衍生特徵：7 天累積降雨
+            "rainfall_30d_sum",       # 衍生特徵：30 天累積降雨
+            "storage_diff_1d",       # 衍生特徵：前日蓄水變化
+            "basin_rainfall_self_mm",
             "inflow_cms", "outflow_cms",
             "effective_storage",
+            "is_imputed_rainfall_self",
+            "is_imputed_inflow",
+            "is_imputed_outflow",
+            "is_imputed_storage",
         }
         assert set(df.columns) == expected
 
-    def test_label_is_last_column(self, df):
-        """label（effective_storage）應該是最後一欄，方便 y = df.iloc[:, -1]"""
-        assert df.columns[-1] == "effective_storage"
+    def test_label_is_present(self, df):
+        """effective_storage 存在於欄位中，LSTM 訓練時明確指定即可"""
+        assert "effective_storage" in df.columns
 
 
 # ============================================================================
