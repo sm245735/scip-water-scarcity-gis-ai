@@ -6,7 +6,7 @@
 提供 LSTM 模型預測評估所需的標準指標：
 MAE、RMSE、NSE、KGE、PBIAS
 
-KGE 邊界情況：當 std(yhat) = 0 時，回傳 -0.414（而非 NaN）。
+KGE 邊界情況：當 std(yhat) = 0 時，回傳 NaN（數學上合理，無變異則無相關）。
 這是因為 baseline 模型長期預測同一個值時會發生此情況。
 """
 
@@ -98,7 +98,7 @@ def kge(y, yhat):
 
     # 邊界情況：預測值全部相同（std=0）
     if np.std(yhat) == 0:
-        return -0.414
+        return float("nan")
 
     r = np.corrcoef(y, yhat)[0, 1]
     alpha = np.std(yhat) / np.std(y)
