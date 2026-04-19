@@ -2,8 +2,13 @@
 # -*- coding: utf-8 -*-
 """
 =============================================================================
-Step 1：組裝寶山第二水庫 LSTM 訓練集
+Step 1：組裝寶山第二水庫 LSTM 訓練集（v1.0.0）
 =============================================================================
+版本歷史：
+    v1.0.0 (2026-04-19)：初版，含 is_imputed 邏輯
+    未來調整補值策略後另存為 _v2_YYYYMMDD，保留 v1 作為歷史版本
+
+設計決策：
 功能：
     1. 從 reservoir_daily 撈寶二（reservoir_id=23）2016-2023 每日水情
     2. JOIN TCCIP 頭前溪集水區每日降雨（空間平均）
@@ -15,7 +20,9 @@ Step 1：組裝寶山第二水庫 LSTM 訓練集
 
 設計決策：
     - 降雨以 TCCIP 空間加權平均（basin_rainfall_tccip_mm）為主要 feature
-    - reservoir_daily 自帶的 basin_rainfall_mm 改名為 _self_mm 作為對照欄位
+    - reservoir_daily 自帶的 basin_rainfall_mm 改名為 _self_mm 作為對照欄位（不进模型）
+    - reservoir_daily 保持「事實表」語意（NULL 為 NULL，不在 DB 層補值）
+    - is_imputed_* 打在訓練集 CSV 這層，隔離「分析決策」與「資料事實」
     - 時間範圍鎖 2016-01-01 ~ 2023-12-31（跟 TCCIP 對齊）
 
 執行：
