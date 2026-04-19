@@ -212,8 +212,8 @@ def build_training_set() -> pd.DataFrame:
         "inflow_cms",                # Feature
         "outflow_cms",               # Feature
         "effective_storage",         # LABEL
-        "is_imputed_rainfall_tccip",  # 補值旗標
-        "is_imputed_rainfall_self",   # 補值旗標
+        # is_imputed_rainfall_tccip 移除：TCCIP CSV 預先計算完整，永遠為 0，是雜訊
+        "is_imputed_rainfall_self",   # 補值旗標（reservoir_daily.basin_rainfall_mm 可能真的有缺）
         "is_imputed_inflow",           # 補值旗標
         "is_imputed_outflow",          # 補值旗標
         "is_imputed_storage",          # 補值旗標
