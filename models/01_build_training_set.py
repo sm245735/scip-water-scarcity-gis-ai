@@ -204,21 +204,48 @@ def build_training_set() -> pd.DataFrame:
     df["doy_sin"] = np.sin(2 * np.pi * df["day_of_year"] / 365.25)
     df["doy_cos"] = np.cos(2 * np.pi * df["day_of_year"] / 365.25)
 
+    # =========================================================
+    # 衍生特徵（基於已清洗的欄位計算，可選擇性進入 LSTM）
+    # =========================================================
+    print("\n→ 產生衍生特徵（rolling sums 與 lag differences）")
+
+    # 累積降雨：用 TCCIP 為主（可信度 100%）
+    df["rainfall_7d_sum"] = df["basin_rainfall_tccip_mm"].rolling(window=7, min_periods=1).sum()
+    df["rainfall_30d_sum"] = df["basin_rainfall_tccip_mm"].rolling(window=30, min_periods=1).sum()
+
+    # 蓄水量變化率：前一日差值（第一日會是 NaN，需處理）
+    df["storage_diff_1d"] = df["effective_storage"].diff()
+    df["storage_diff_1d"] = df["storage_diff_1d"].fillna(0)  # 第一日無前值，補 0 合理
+
+    # 檢查
+    print(f"  rainfall_7d_sum  : 範圍 [{df['rainfall_7d_sum'].min():.1f}, {df['rainfall_7d_sum'].max():.1f}] mm")
+    print(f"  rainfall_30d_sum : 範圍 [{df['rainfall_30d_sum'].min():.1f}, {df['rainfall_30d_sum'].max():.1f}] mm")
+    print(f"  storage_diff_1d : 範圍 [{df['storage_diff_1d'].min():.1f}, {df['storage_diff_1d'].max():.1f}] 萬m³")
+
     # 欄位排序（feature / label / flag 分組排列，LSTM 訓練時明確指定欄位）
     # 訓練時請用：
     #   LABEL_COL = "effective_storage"
-    #   FEATURE_COLS = ["basin_rainfall_tccip_mm", "inflow_cms", "outflow_cms",
-    #                   "doy_sin", "doy_cos",
-    #                   "is_imputed_inflow", "is_imputed_outflow"]
+    #   FEATURE_COLS = [
+    #       "basin_rainfall_tccip_mm",   # 當日降雨
+    #       "rainfall_7d_sum",           # 7 天累積降雨
+    #       "rainfall_30d_sum",          # 30 天累積降雨
+    #       "effective_storage",         # 當前蓄水量
+    #       "storage_diff_1d",           # 昨日蓄水變化
+    #       "doy_sin",                   # 年週期 sin
+    #       "doy_cos",                   # 年週期 cos
+    #   ]
     #   注意：basin_rainfall_self_mm 是水利署單點值，僅供 sanity check，不進模型
-    #   （與 basin_rainfall_tccip_mm 高度相關，同時餵入會造成資訊冗餘）
+    #   注意：inflow_cms / outflow_cms 缺值 97.8%，保留於 CSV 但不進模型（口試可說明原因）
     col_order = [
         "data_date",
         "year", "month", "day_of_year", "doy_sin", "doy_cos",
         "basin_rainfall_tccip_mm",   # Feature（主）— TCCIP 空間平均
+        "rainfall_7d_sum",           # Feature（衍生）— 7 天累積降雨
+        "rainfall_30d_sum",          # Feature（衍生）— 30 天累積降雨
+        "storage_diff_1d",           # Feature（衍生）— 前日蓄水變化
         "basin_rainfall_self_mm",    # Feature（對照）— Statistics.aspx 自報
-        "inflow_cms",                # Feature
-        "outflow_cms",               # Feature
+        "inflow_cms",                # Feature（對照）— 保留，不進模型
+        "outflow_cms",               # Feature（對照）— 保留，不進模型
         "effective_storage",         # LABEL
         # is_imputed_rainfall_tccip 移除：TCCIP CSV 預先計算完整，永遠為 0，是雜訊
         "is_imputed_rainfall_self",   # 補值旗標（reservoir_daily.basin_rainfall_mm 可能真的有缺）
