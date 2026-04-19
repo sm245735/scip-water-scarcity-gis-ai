@@ -201,9 +201,10 @@ def build_training_set() -> pd.DataFrame:
     # 訓練時請用：
     #   LABEL_COL = "effective_storage"
     #   FEATURE_COLS = ["basin_rainfall_tccip_mm", "inflow_cms", "outflow_cms",
-    #                   "doy_sin", "doy_cos", "is_imputed_inflow", "is_imputed_outflow"]
-    #   X = df[FEATURE_COLS]
-    #   y = df[LABEL_COL]
+    #                   "doy_sin", "doy_cos",
+    #                   "is_imputed_inflow", "is_imputed_outflow"]
+    #   注意：basin_rainfall_self_mm 是水利署單點值，僅供 sanity check，不進模型
+    #   （與 basin_rainfall_tccip_mm 高度相關，同時餵入會造成資訊冗餘）
     col_order = [
         "data_date",
         "year", "month", "day_of_year", "doy_sin", "doy_cos",
