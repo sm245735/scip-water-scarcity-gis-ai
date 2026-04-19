@@ -197,7 +197,13 @@ def build_training_set() -> pd.DataFrame:
     df["doy_sin"] = np.sin(2 * np.pi * df["day_of_year"] / 365.25)
     df["doy_cos"] = np.cos(2 * np.pi * df["day_of_year"] / 365.25)
 
-    # 欄位排序（label 放最後，方便 y = df.iloc[:, -1]）
+    # 欄位排序（feature / label / flag 分組排列，LSTM 訓練時明確指定欄位）
+    # 訓練時請用：
+    #   LABEL_COL = "effective_storage"
+    #   FEATURE_COLS = ["basin_rainfall_tccip_mm", "inflow_cms", "outflow_cms",
+    #                   "doy_sin", "doy_cos", "is_imputed_inflow", "is_imputed_outflow"]
+    #   X = df[FEATURE_COLS]
+    #   y = df[LABEL_COL]
     col_order = [
         "data_date",
         "year", "month", "day_of_year", "doy_sin", "doy_cos",
