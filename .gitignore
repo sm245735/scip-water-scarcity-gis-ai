@@ -9,6 +9,13 @@ data/
 *.xlsx
 *.zip
 
+# === 跟論文無關的個人 side project 不進 Git ===
+# ICML 2026 翻譯 side project（與本論文研究方向無關）
+# 位置：/root/Downloads/ICML2026_papers.xlsx、/tmp/icml_*.py、/tmp/icml2026_*.json
+# 規則：即使移到本 repo 內也禁止 commit
+/ICML*/
+**/ICML2026*
+
 # Python 垃圾檔
 __pycache__/
 *.pyc
