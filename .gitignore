@@ -16,6 +16,25 @@ data/
 /ICML*/
 **/ICML2026*
 
+# === 模型輸出（檔案大、會被重新訓練產出，不進 Git）===
+# 訓練好的 .keras / .npy / .png 都是輸出產物
+# 但 models/*.py 程式碼要進 Git（除非另有安排）
+model/
+models/*.keras
+models/*.h5
+models/*.hdf5
+models/*.npy
+models/*.png
+models/*.jpg
+models/*.pkl
+models/*.joblib
+models/*.pt
+models/*.pth
+
+# === 草稿檔（手誤/暫存，不進 Git）===
+*水庫位置彙整.txt
+*草稿*
+
 # Python 垃圾檔
 __pycache__/
 *.pyc

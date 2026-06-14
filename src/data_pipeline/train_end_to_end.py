@@ -202,7 +202,7 @@ def evaluate_and_predict(model, scaler, df_merged):
     test_scaled = scaler.transform(test_df)
 
     # 3. 製作時間滑動視窗 (一樣看過去 14 天預測明天)
-    TIME_STEPS = 7
+    TIME_STEPS = 14
     X_test, Y_test = [], []
     for i in range(len(test_scaled) - TIME_STEPS):
         X_test.append(test_scaled[i : i + TIME_STEPS, :])
