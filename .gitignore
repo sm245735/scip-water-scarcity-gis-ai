@@ -77,3 +77,13 @@ venv/
 
 # Log 檔（每日收集歷史，不進 Git）
 src/logs/
+
+# === 2026-06-15 新增：寶二補資料相關雜訊 ===
+# side project 日期清單（你個人缺的、不是論文資產）
+*寶二*.txt
+*水庫EXCEPT*.txt
+*水庫第*輪*.txt
+# 通用 log 規則
+*.log
+# 編輯器設定
+.vscode/
