@@ -20,17 +20,30 @@ data/
 # === 模型輸出（檔案大、會被重新訓練產出，不進 Git）===
 # 訓練好的 .keras / .npy / .png 都是輸出產物
 # 但 models/*.py 程式碼要進 Git（除非另有安排）
-model/
-models/*.keras
-models/*.h5
-models/*.hdf5
-models/*.npy
-models/*.png
-models/*.jpg
-models/*.pkl
-models/*.joblib
-models/*.pt
-models/*.pth
+# === 模型輸出（檔案大、會被重新訓練產出，不進 Git）===
+# 訓練好的 .keras / .npy / .png 都是輸出產物
+# 但 model/ 底下的 metadata (.md/.txt) 和模型 .py 程式碼要進 Git
+# 用副檔名逐個排除 (避開 `model/` 全目錄排除會壓死子檔的問題)
+model/*.keras
+model/*.h5
+model/*.hdf5
+model/*.npy
+model/*.png
+model/*.jpg
+model/*.pkl
+model/*.joblib
+model/*.pt
+model/*.pth
+model/**/*.keras
+model/**/*.h5
+model/**/*.hdf5
+model/**/*.npy
+model/**/*.png
+model/**/*.jpg
+model/**/*.pkl
+model/**/*.joblib
+model/**/*.pt
+model/**/*.pth
 
 # === 草稿檔（手誤/暫存，不進 Git）===
 *水庫位置彙整.txt
