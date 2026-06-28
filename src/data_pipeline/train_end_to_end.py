@@ -1,4 +1,5 @@
 import os
+import sys
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -21,7 +22,10 @@ ENV_PATH = PROJECT_ROOT / "src" / ".env"
 
 # 自動產生今天的日期字串與時間 (時分秒，防覆蓋)
 TODAY_STR = datetime.now().strftime("%Y%m%d_%H%M%S")
-SAVE_DIR = PROJECT_ROOT / "model" / TODAY_STR
+# 🆕 SAVE_DIR 改名: 支援 seed 參數 (從 sys.argv[1] 讀), 沒給就是 seed=42
+# 用法: python train_end_to_end.py [SEED]
+_RUN_SEED = int(sys.argv[1]) if len(sys.argv) > 1 else 42
+SAVE_DIR = PROJECT_ROOT / "model" / f"{TODAY_STR}_seed{_RUN_SEED}"
 SAVE_DIR.mkdir(parents=True, exist_ok=True)
 
 # ==========================================
@@ -56,60 +60,82 @@ def fetch_and_prepare_data():
         """ 
         df_reservoir = pd.read_sql(query_reservoir, engine)
 
-        print("正在撈取氣象站資料 (2014-2025)...")
-        query_climate = """
-        SELECT 
-            TO_CHAR("date", 'YYYY-MM-DD') AS obs_date, 
-            
-            -- 處理降雨量：-9.8 當作 0，其他負數當作 NULL
-            CASE 
-                WHEN "PP01" = -9.8 THEN 0.0 
-                WHEN "PP01" < 0 THEN NULL 
-                ELSE "PP01" 
-            END AS "PP01", 
-            
-            -- 處理氣溫：台灣平地低於 -10 度絕對是異常代碼
-            CASE WHEN "TX01" < -10 THEN NULL ELSE "TX01" END AS "TX01", 
-            CASE WHEN COALESCE("TX02", "TX01") < -10 THEN NULL ELSE COALESCE("TX02", "TX01") END AS "TX02", 
-            
-            -- 處理濕度、風速、氣壓：不可能小於 0，負數皆為異常代碼
-            CASE WHEN "RH01" < 0 THEN NULL ELSE "RH01" END AS "RH01", 
-            CASE WHEN "WD01" < 0 THEN NULL ELSE "WD01" END AS "WD01", 
-            CASE WHEN "PS01" < 0 THEN NULL ELSE "PS01" END AS "PS01"
-            
-        FROM codis_weatherdata  
-        WHERE stno = 'C0D580' 
-        AND "date" >= '2014-01-01' AND "date" < '2026-01-01';
-        """ 
-        df_climate = pd.read_sql(query_climate, engine)
+        # ==========================================
+        # 撈取氣象站資料: codis_weatherdata_v2
+        # 8 個站一次撈, 不在 SQL 端過濾負值/異常值 (這批 CWA_Data/ 已清乾淨,
+        # 留 NULL 就好; ETL 不負責補值)
+        # ==========================================
+        CLIMATE_COLS = ["PP01", "TX01", "TX02", "RH01", "WD01", "PS01"]
+        # 注意: codis_weatherdata_v2 的欄位在 PG 內被 fold 成小寫 (pp01/tx01/...),
+        # 所以 query 用小寫 + 引號明確 escape
+        CLIMATE_COLS_SQL = ", ".join(f'"{c.lower()}"' for c in CLIMATE_COLS)
+        print("正在撈取氣象站資料 (2014-2025, 8 站) ...")
+        query_climate_raw = f"""
+        SELECT
+            TO_CHAR("date", 'YYYY-MM-DD') AS obs_date,
+            stno,
+            {CLIMATE_COLS_SQL}
+        FROM codis_weatherdata_v2
+        WHERE "date" >= '2014-01-01' AND "date" < '2026-01-01';
+        """
+        df_climate_raw = pd.read_sql(query_climate_raw, engine)
+        # PG 回傳小寫欄名, rename 回我們慣用的大寫命名 (跟 v1 一致, 後續 pipeline 看得懂)
+        df_climate_raw = df_climate_raw.rename(
+            columns={c.lower(): c for c in CLIMATE_COLS}
+        )
 
         print("正在合併與對齊時間軸...")
-        df_merged = pd.merge(df_climate, df_reservoir, on='obs_date', how='left')
-        df_merged['obs_date'] = pd.to_datetime(df_merged['obs_date'])
-        df_merged.set_index('obs_date', inplace=True)
-
-        df_merged = df_merged.sort_index()
+        df_reservoir['obs_date'] = pd.to_datetime(df_reservoir['obs_date'])
+        df_climate_raw['obs_date'] = pd.to_datetime(df_climate_raw['obs_date'])
 
         # ==========================================
-        # 🌟 【新增】氣象局地雷清除作業
-        # 把不合理的極端負數全部變成 NaN (空白)，讓後面的補血魔法接手
+        # 跨站平均: 每個 (obs_date, element) 對所有「有值」的站台取平均
+        # - 雨量站 C1D410/C1D420 在 TX01/TX02/RH01/WD01/PS01 是 NULL,
+        #   groupby.mean() 自動跳過 NULL → 它們不會污染非 PP01 的平均
+        # - PP01 欄位 8 站都有, 所以 PP01 平均 = 8 站平均
+        # - TX01/TX02/RH01/WD01/PS01 平均 = 當天 5 個氣象站/農業站平均
         # ==========================================
-        print("正在清除氣象異常值與錯誤代碼...")
-        # 1. 雨量不可能小於 0，把小於 0 的變成 NaN
-        df_merged['PP01'] = df_merged['PP01'].mask(df_merged['PP01'] < 0)
-        
-        # 2. 氣溫在台灣平地不可能低於 -10 度，把小於 -10 的變成 NaN
-        df_merged['TX01'] = df_merged['TX01'].mask(df_merged['TX01'] < -10)
-        df_merged['TX02'] = df_merged['TX02'].mask(df_merged['TX02'] < -10)
-        # ==========================================
-        
-        # 🛡️ 終極防禦性補值：檢查「整張表」所有欄位
-        if df_merged.isnull().values.any():
-            print(f"⚠️ 發現資料庫有缺漏值！正在為【全欄位】進行線性內插與雙向補齊...")
-            # 直接對整張表 df_merged 進行補值，無死角防禦！
-            df_merged = df_merged.interpolate(method='time').bfill().ffill()
+        print("正在計算跨站每日平均 (NULL 不參與平均)...")
+        df_daily_avg = (
+            df_climate_raw
+            .groupby('obs_date')[CLIMATE_COLS]
+            .mean()                # pandas 預設 skipna=True, NULL 不計入
+            .reset_index()
+        )
 
-        print("✅ 資料準備完畢！")
+        df_merged = pd.merge(df_daily_avg, df_reservoir, on='obs_date', how='left')
+        df_merged = df_merged.set_index('obs_date').sort_index()
+
+        # ==========================================
+        # 🌟 補值: 先看 avg 後還有沒有缺值 (极罕見, 但 CWA 偶爾會全站當天缺)
+        # 用 time-based interpolate + bfill/ffill (跟原本的補值精神一致)
+        # storage_rate 也一起補 (水庫偶爾有缺測日), 確保 LSTM 餵進去的 X 全是 finite
+        # ==========================================
+        ALL_COLS = CLIMATE_COLS + ["storage_rate"]
+        if df_merged[ALL_COLS].isnull().values.any():
+            nulls_per_col = df_merged[ALL_COLS].isnull().sum()
+            nonzero = nulls_per_col[nulls_per_col > 0]
+            print(f"⚠️ 補值前仍有缺漏: {nonzero.to_dict()}")
+            print("   正在用時序線性內插 + 雙向補齊 ...")
+            df_merged[ALL_COLS] = (
+                df_merged[ALL_COLS]
+                .interpolate(method='time', limit_direction='both')
+                .bfill()
+                .ffill()
+            )
+        else:
+            print("✅ 補值前無缺漏, 不需補值")
+
+        # 🛡️ 防呆: 補完後還有 NaN/Inf 就大聲叫出來, 不要讓 NaN 偷渡進 LSTM
+        n_nan = int(df_merged[ALL_COLS].isnull().values.sum())
+        n_inf = int(np.isinf(df_merged[ALL_COLS].to_numpy()).sum())
+        if n_nan or n_inf:
+            raise ValueError(
+                f"❌ 補值後仍有 NaN={n_nan}, Inf={n_inf}, 不能餵給 LSTM. "
+                f"請檢查 {ALL_COLS} 的來源資料。"
+            )
+
+        print(f"✅ 資料準備完畢! 形狀={df_merged.shape}, 欄位={list(df_merged.columns)}")
         return df_merged
 
     finally:
@@ -181,6 +207,8 @@ def train_reservoir_lstm(df_merged):
 
     actual_epochs = len(history.history['loss'])
     print(f"\n💡 報告！模型實際只跑了 {actual_epochs} 輪就觸發 Early Stop 提早結束了！")
+    # 🆕 機器可讀格式: 給 10-run wrapper 抓 epoch 數
+    print(f"@@@EPOCHS@@@{actual_epochs}@@@")
 
     print("\n=== 儲存模型與訓練圖表 ===")
     model_path = SAVE_DIR / "lstm_model.keras"
@@ -256,7 +284,9 @@ def evaluate_and_predict(model, scaler, df_merged):
 白話文： 如果 R^2 算出來是 {r2:.4f}，您可以很有自信地跟教授說：「我的模型成功解釋了水庫 {r2*100:.1f}% 的變化規律！」（這非常接近一般人理解的正確率）。
 """
     print(metrics_text)
-    
+    # 🆕 機器可讀格式: 給 10-run wrapper 抓 R²/MAPE
+    print(f"@@@METRICS@@@R2={r2:.6f}@@@MAPE={mape:.6f}@@@ACC={accuracy:.6f}@@@")
+
     # 【新增】將成績單存檔
     txt_path = SAVE_DIR / "準確率.txt"
     with open(txt_path, "w", encoding="utf-8") as f:
@@ -315,6 +345,19 @@ def evaluate_and_predict(model, scaler, df_merged):
 # 程式進入點
 # ==========================================
 if __name__ == "__main__":
+    # 🆕 支援 seed CLI 參數 (預設 42, 用於 10-run 重現性實驗)
+    SEED = int(sys.argv[1]) if len(sys.argv) > 1 else 42
+    print(f"🎲 SEED = {SEED}")
+    # 全域隨機種子 (numpy + python random + tensorflow)
+    import random as _random
+    _random.seed(SEED)
+    np.random.seed(SEED)
+    try:
+        import tensorflow as tf
+        tf.random.set_seed(SEED)
+    except ImportError:
+        pass
+
     prepared_data = fetch_and_prepare_data()
     trained_model, fitted_scaler = train_reservoir_lstm(prepared_data)
     evaluate_and_predict(trained_model, fitted_scaler, prepared_data)

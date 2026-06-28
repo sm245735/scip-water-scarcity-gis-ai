@@ -8,6 +8,7 @@ data/
 !data_samples/*.csv
 *.xlsx
 *.zip
+*.tar.gz
 
 # === 跟論文無關的個人 side project 不進 Git ===
 # ICML 2026 翻譯 side project（與本論文研究方向無關）
