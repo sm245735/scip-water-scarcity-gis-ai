@@ -7,6 +7,7 @@
 -- =============================================
 -- 模組一：空間與觀測基礎資料表（GIS 疊圖與特徵來源）
 -- =============================================
+CREATE EXTENSION IF NOT EXISTS postgis;
 
 -- 1. rainfall_grid_data（TCCIP 網格化降雨資料）
 -- 用途：儲存 TCCIP 網格化降雨資料，支援空間查詢
@@ -53,6 +54,7 @@ CREATE INDEX IF NOT EXISTS idx_reservoir_geom ON reservoir_boundaries USING GIST
 -- 調整（2026-04-15 學長）：
 --   - geom 明確指定為 MultiPolygon，確保 CRS 為 4326
 
+CREATE TABLE IF NOT EXISTS reservoir_catchments (
     id SERIAL PRIMARY KEY,
     basin_id INTEGER,
     basin_name VARCHAR(100),               -- 所屬流域（如「頭前溪」）

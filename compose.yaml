@@ -1,0 +1,42 @@
+name: thesis-recovery
+services:
+  db:
+    image: postgis/postgis:16-3.5@sha256:94146ac37bc61e2322f88016056c5920729cb8c64c8542ed590af8fc2abdac07
+    environment:
+      POSTGRES_DB: thesis_recovery
+      POSTGRES_USER: thesis
+      POSTGRES_PASSWORD: ${RECOVERY_DB_PASSWORD:?Run bootstrap first}
+      TZ: Asia/Taipei
+      PGTZ: Asia/Taipei
+    ports:
+      - "127.0.0.1:${RECOVERY_DB_PORT:-55432}:5432"
+    volumes:
+      - research_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U thesis -d thesis_recovery"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+  recovery:
+    build:
+      context: .
+      dockerfile: docker/recovery.Dockerfile
+    profiles: [tools]
+    environment:
+      PGHOST: db
+      PGDATABASE: thesis_recovery
+      PGUSER: thesis
+      PGPASSWORD: ${RECOVERY_DB_PASSWORD:?Run bootstrap first}
+      PGTZ: Asia/Taipei
+      PYTHONUNBUFFERED: "1"
+    volumes:
+      - .:/app
+      - ${THESIS_ROOT:-..}:/workspace:ro
+    working_dir: /app
+    depends_on:
+      db:
+        condition: service_healthy
+    entrypoint: [python, src/recovery/recover.py]
+volumes:
+  research_pgdata:
